@@ -100,7 +100,7 @@ import FinancialCalculator from '../components/financial/FinancialCalculator';
 
 const Dashboard = () => {
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="w-full px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Real Estate Financial Analysis</h1>
       <FinancialCalculator />
     </div>
