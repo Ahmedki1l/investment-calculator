@@ -731,7 +731,9 @@ const FinancialCalculator = () => {
       {/* Excel-Like Revenue Plan / Schedule */}
       <div className="mb-6">
         {/* Header info */}
-        <p className="text-lg font-bold mb-2">Revenue Schedule</p>
+        <p className="text-xl font-bold mb-2">Revenue Schedule</p>
+
+        <p className="text-lg font-bold mb-2">Selling</p>
 
         {/* Single table with columns for each forecast year */}
         <div className="overflow-auto">
@@ -770,7 +772,29 @@ const FinancialCalculator = () => {
                 </td>
                 {yearPlan.map((row, i) => (
                   <td key={row.year} className="border px-2 py-1 text-right">
-                    {(row.priceIncrease * 100).toFixed(1)}%
+                    <div className="inline-flex items-center justify-end space-x-1">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={row.priceIncrease * 100}
+                        onChange={(e) => {
+                          let newValue = e.target.value ? e.target.value : 0;
+
+                          if (newValue > 100) {
+                            newValue = 100;
+                          }
+
+                          const parsedValue = parseFloat(newValue);
+                          handleYearPlanChange(
+                            i,
+                            "priceIncrease",
+                            parsedValue / 100
+                          );
+                        }}
+                        className="w-10 text-right text-black bg-white px-1"
+                      />
+                      <span className="text-black">%</span>
+                    </div>
                   </td>
                 ))}
               </tr>
@@ -824,14 +848,11 @@ const FinancialCalculator = () => {
                         className="bg-white border border-gray-300 rounded px-1 py-0.5 text-right"
                         value={y.vipShare}
                         onChange={(e) => {
-                          handleYearPlanChange(
-                            idx,
-                            "vipShare",
-                            e.target.value
-                          );
+                          handleYearPlanChange(idx, "vipShare", e.target.value);
                           if (idx < yearPlan.length - 1) {
-                            let leftover2 = parseFloat (
-                              leftover - e.target.value).toFixed(2);
+                            let leftover2 = parseFloat(
+                              leftover - e.target.value
+                            ).toFixed(2);
                             for (let i = idx + 1; i < yearPlan.length; i++) {
                               console.log("leftover2" + i + ": ", leftover2);
                               if (yearPlan[i].vipShare <= leftover2) {
@@ -840,8 +861,10 @@ const FinancialCalculator = () => {
                                   "vipShare",
                                   yearPlan[i].vipShare
                                 );
-                                leftover2 = parseFloat(leftover2 - yearPlan[i].vipShare).toFixed(2);
-                              } else if(leftover2 >= 0.1) {
+                                leftover2 = parseFloat(
+                                  leftover2 - yearPlan[i].vipShare
+                                ).toFixed(2);
+                              } else if (leftover2 >= 0.1) {
                                 handleYearPlanChange(i, "vipShare", leftover2);
                                 leftover2 = 0;
                               } else {
@@ -956,8 +979,9 @@ const FinancialCalculator = () => {
                             e.target.value
                           );
                           if (idx < yearPlan.length - 1) {
-                            let leftover2 = parseFloat (
-                              leftover - e.target.value).toFixed(2);
+                            let leftover2 = parseFloat(
+                              leftover - e.target.value
+                            ).toFixed(2);
                             for (let i = idx + 1; i < yearPlan.length; i++) {
                               console.log("leftover2" + i + ": ", leftover2);
                               if (yearPlan[i].mezzShare <= leftover2) {
@@ -966,8 +990,10 @@ const FinancialCalculator = () => {
                                   "mezzShare",
                                   yearPlan[i].mezzShare
                                 );
-                                leftover2 = parseFloat(leftover2 - yearPlan[i].mezzShare).toFixed(2);
-                              } else if(leftover2 >= 0.1) {
+                                leftover2 = parseFloat(
+                                  leftover2 - yearPlan[i].mezzShare
+                                ).toFixed(2);
+                              } else if (leftover2 >= 0.1) {
                                 handleYearPlanChange(i, "mezzShare", leftover2);
                                 leftover2 = 0;
                               } else {
@@ -1083,8 +1109,9 @@ const FinancialCalculator = () => {
                             e.target.value
                           );
                           if (idx < yearPlan.length - 1) {
-                            let leftover2 = parseFloat (
-                              leftover - e.target.value).toFixed(2);
+                            let leftover2 = parseFloat(
+                              leftover - e.target.value
+                            ).toFixed(2);
                             for (let i = idx + 1; i < yearPlan.length; i++) {
                               console.log("leftover2" + i + ": ", leftover2);
                               if (yearPlan[i].adminShare <= leftover2) {
@@ -1093,9 +1120,15 @@ const FinancialCalculator = () => {
                                   "adminShare",
                                   yearPlan[i].adminShare
                                 );
-                                leftover2 = parseFloat(leftover2 - yearPlan[i].adminShare).toFixed(2);
-                              } else if(leftover2 >= 0.1) {
-                                handleYearPlanChange(i, "adminShare", leftover2);
+                                leftover2 = parseFloat(
+                                  leftover2 - yearPlan[i].adminShare
+                                ).toFixed(2);
+                              } else if (leftover2 >= 0.1) {
+                                handleYearPlanChange(
+                                  i,
+                                  "adminShare",
+                                  leftover2
+                                );
                                 leftover2 = 0;
                               } else {
                                 handleYearPlanChange(i, "adminShare", 0);
@@ -1181,6 +1214,488 @@ const FinancialCalculator = () => {
             </tfoot>
           </table>
         </div>
+        <p className="text-lg font-bold mb-2 mt-2">Renting</p>
+
+        {/* Single table with columns for each forecast year */}
+        <div className="overflow-auto">
+          <table className="border border-collapse w-full text-sm">
+            {/* ---------- TABLE HEAD ---------- */}
+            <thead className="bg-gray-100">
+              <tr>
+                <th
+                  className="border px-2 py-1 text-left"
+                  style={{ width: "180px" }}
+                ></th>
+                {calculations.yearlyData.map((y) => (
+                  <th key={y.year} className="border px-2 py-1 text-right">
+                    {y.year}F
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            {/* ---------- TABLE BODY ---------- */}
+            <tbody>
+              {/* Example row: Tax Rate (same across all years) */}
+              <tr>
+                <td className="border px-2 py-1 font-semibold">Tax Rate</td>
+                {calculations.yearlyData.map((y, i) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {inputs.taxRate.toFixed(1)}%
+                  </td>
+                ))}
+              </tr>
+
+              {/* Example row: Price Increase per year */}
+              <tr>
+                <td className="border px-2 py-1 font-semibold">
+                  Price Increase
+                </td>
+                {yearPlan.map((row, i) => (
+                  <td key={row.year} className="border px-2 py-1 text-right">
+                    <div className="inline-flex items-center justify-end space-x-1">
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={row.priceIncrease * 100}
+                        onChange={(e) => {
+                          let newValue = e.target.value ? e.target.value : 0;
+
+                          if (newValue > 100) {
+                            newValue = 100;
+                          }
+
+                          const parsedValue = parseFloat(newValue);
+                          handleYearPlanChange(
+                            i,
+                            "priceIncrease",
+                            parsedValue / 100
+                          );
+                        }}
+                        className="w-10 text-right text-black bg-white px-1"
+                      />
+                      <span className="text-black">%</span>
+                    </div>
+                  </td>
+                ))}
+              </tr>
+
+              {/* Blank or separator row */}
+              <tr className="bg-gray-50">
+                <td
+                  className="border px-2 py-1"
+                  colSpan={1 + calculations.yearlyData.length}
+                >
+                  &nbsp;
+                </td>
+              </tr>
+
+              {/* VIP floor rows (area, % completion, avg price, total revenue, etc.)
+            You can break these out into multiple rows if you like, or just one. */}
+              <tr>
+                <td className="border px-2 py-1 font-semibold">VIP Floor</td>
+              </tr>
+              {/* Row for Current Year Area */}
+              <tr>
+                <td className="border px-2 py-1">
+                  Area (Total: {inputs.vipFloorArea * inputs.vipFloors} m²)
+                </td>
+                {calculations.yearlyData.map((y) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {y.currentVipArea}m²
+                  </td>
+                ))}
+              </tr>
+              {/* Row for % of completion */}
+              <tr>
+                <td className="border px-2 py-1">% of Completion</td>
+                {yearPlan.map((y, idx) => {
+                  // Sum of all vipShares to the left
+                  const usedSoFar = yearPlan
+                    .slice(0, idx)
+                    .reduce((acc, item) => acc + item.vipShare, 0);
+
+                  // Round leftover to 2 decimals
+                  const leftoverRaw = 1 - usedSoFar;
+                  const leftover = parseFloat(
+                    Math.max(0, leftoverRaw).toFixed(2)
+                  );
+
+                  console.log("leftover" + idx + ": ", leftover);
+
+                  return (
+                    <td key={y.year} className="border px-2 py-1 text-right">
+                      <select
+                        className="bg-white border border-gray-300 rounded px-1 py-0.5 text-right"
+                        value={y.vipShare}
+                        onChange={(e) => {
+                          handleYearPlanChange(idx, "vipShare", e.target.value);
+                          if (idx < yearPlan.length - 1) {
+                            let leftover2 = parseFloat(
+                              leftover - e.target.value
+                            ).toFixed(2);
+                            for (let i = idx + 1; i < yearPlan.length; i++) {
+                              console.log("leftover2" + i + ": ", leftover2);
+                              if (yearPlan[i].vipShare <= leftover2) {
+                                handleYearPlanChange(
+                                  i,
+                                  "vipShare",
+                                  yearPlan[i].vipShare
+                                );
+                                leftover2 = parseFloat(
+                                  leftover2 - yearPlan[i].vipShare
+                                ).toFixed(2);
+                              } else if (leftover2 >= 0.1) {
+                                handleYearPlanChange(i, "vipShare", leftover2);
+                                leftover2 = 0;
+                              } else {
+                                handleYearPlanChange(i, "vipShare", 0);
+                              }
+                            }
+                          }
+                        }}
+                      >
+                        {/* Generate options from 0 up to leftover in 10% steps */}
+                        {generateOptions(leftover, 0.1).map((val) => (
+                          <option key={val} value={val}>
+                            {(val * 100).toFixed(0)}%
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  );
+                })}
+              </tr>
+              {/* Row for AVG sales price per sft */}
+              <tr>
+                <td className="border px-2 py-1">AVG Sales Price / m²</td>
+                {calculations.yearlyData.map((row, idx) =>
+                  idx === 0 ? (
+                    <>
+                      <td className="borde px-2">
+                        <div className="flex justify-end">
+                          <Input
+                            type="number"
+                            className="w-20 text-right"
+                            value={currentVipPrice}
+                            onChange={(e) => setCurrentVipPrice(e.target.value)}
+                          />
+                        </div>
+                      </td>
+                    </>
+                  ) : (
+                    <td key={row.year} className="border px-2 py-1 text-right">
+                      {formatCurrency(row.vCurrentVipPrice)}
+                    </td>
+                  )
+                )}
+              </tr>
+              <tr>
+                <td className="border px-2 py-1 font-semibold">
+                  Total Revenue
+                </td>
+
+                {calculations.yearlyData.map((y) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {/* For example, show the total VIP revenue */}
+                    {formatCurrency(y.vip)}
+                  </td>
+                ))}
+              </tr>
+
+              {/* Blank or separator row */}
+              <tr className="bg-gray-50">
+                <td
+                  className="border px-2 py-1"
+                  colSpan={1 + calculations.yearlyData.length}
+                >
+                  &nbsp;
+                </td>
+              </tr>
+
+              {/* Mezzanine floor */}
+              <tr>
+                <td className="border px-2 py-1 font-semibold">
+                  Mezzanine Floor
+                </td>
+              </tr>
+              {/* Row for Current Year Area */}
+              <tr>
+                <td className="border px-2 py-1">
+                  Area (Total:{" "}
+                  {inputs.mezzanineFloorArea * inputs.mezzanineFloors} m²)
+                </td>
+                {calculations.yearlyData.map((y) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {y.currentMezzArea}m²
+                  </td>
+                ))}
+              </tr>
+              {/* Row for % of completion */}
+              <tr>
+                <td className="border px-2 py-1">% of Completion</td>
+                {yearPlan.map((y, idx) => {
+                  // Sum of all mezzShares to the left
+                  const usedSoFar = yearPlan
+                    .slice(0, idx)
+                    .reduce((acc, item) => acc + item.mezzShare, 0);
+
+                  // Round leftover to 2 decimals
+                  const leftoverRaw = 1 - usedSoFar;
+                  const leftover = parseFloat(
+                    Math.max(0, leftoverRaw).toFixed(2)
+                  );
+
+                  console.log("leftover" + idx + ": ", leftover);
+
+                  return (
+                    <td key={y.year} className="border px-2 py-1 text-right">
+                      <select
+                        className="bg-white border border-gray-300 rounded px-1 py-0.5 text-right"
+                        value={y.mezzShare}
+                        onChange={(e) => {
+                          handleYearPlanChange(
+                            idx,
+                            "mezzShare",
+                            e.target.value
+                          );
+                          if (idx < yearPlan.length - 1) {
+                            let leftover2 = parseFloat(
+                              leftover - e.target.value
+                            ).toFixed(2);
+                            for (let i = idx + 1; i < yearPlan.length; i++) {
+                              console.log("leftover2" + i + ": ", leftover2);
+                              if (yearPlan[i].mezzShare <= leftover2) {
+                                handleYearPlanChange(
+                                  i,
+                                  "mezzShare",
+                                  yearPlan[i].mezzShare
+                                );
+                                leftover2 = parseFloat(
+                                  leftover2 - yearPlan[i].mezzShare
+                                ).toFixed(2);
+                              } else if (leftover2 >= 0.1) {
+                                handleYearPlanChange(i, "mezzShare", leftover2);
+                                leftover2 = 0;
+                              } else {
+                                handleYearPlanChange(i, "mezzShare", 0);
+                              }
+                            }
+                          }
+                        }}
+                      >
+                        {/* Generate options from 0 up to leftover in 10% steps */}
+                        {generateOptions(leftover, 0.1).map((val) => (
+                          <option key={val} value={val}>
+                            {(val * 100).toFixed(0)}%
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  );
+                })}
+              </tr>
+              {/* Row for AVG sales price per sft */}
+              <tr>
+                <td className="border px-2 py-1">AVG Sales Price / m²</td>
+                {calculations.yearlyData.map((row, idx) =>
+                  idx === 0 ? (
+                    <>
+                      <td className="borde px-2">
+                        <div className="flex justify-end">
+                          <Input
+                            type="number"
+                            className="w-20 text-right"
+                            value={currentMezzPrice}
+                            onChange={(e) =>
+                              setCurrentMezzPrice(e.target.value)
+                            }
+                          />
+                        </div>
+                      </td>
+                    </>
+                  ) : (
+                    <td key={row.year} className="border px-2 py-1 text-right">
+                      {formatCurrency(row.vCurrentMezzPrice)}
+                    </td>
+                  )
+                )}
+              </tr>
+              <tr>
+                <td className="border px-2 py-1 font-semibold">
+                  Total Revenue
+                </td>
+                {calculations.yearlyData.map((y) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {formatCurrency(y.mezzanine)}
+                  </td>
+                ))}
+              </tr>
+
+              {/* Blank or separator row */}
+              <tr className="bg-gray-50">
+                <td
+                  className="border px-2 py-1"
+                  colSpan={1 + calculations.yearlyData.length}
+                >
+                  &nbsp;
+                </td>
+              </tr>
+
+              {/* Administrative floor */}
+              <tr>
+                <td className="border px-2 py-1 font-semibold">
+                  Administrative Floor
+                </td>
+              </tr>
+              {/* Row for Current Year Area */}
+              <tr>
+                <td className="border px-2 py-1">
+                  Area (Total:{" "}
+                  {inputs.administrativeFloorArea * inputs.administrativeFloors}{" "}
+                  m²)
+                </td>
+                {calculations.yearlyData.map((y) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {y.currentAdminArea}m²
+                  </td>
+                ))}
+              </tr>
+              {/* Row for % of completion */}
+              <tr>
+                <td className="border px-2 py-1">% of Completion</td>
+                {yearPlan.map((y, idx) => {
+                  // Sum of all adminShares to the left
+                  const usedSoFar = yearPlan
+                    .slice(0, idx)
+                    .reduce((acc, item) => acc + item.adminShare, 0);
+
+                  // Round leftover to 2 decimals
+                  const leftoverRaw = 1 - usedSoFar;
+                  const leftover = parseFloat(
+                    Math.max(0, leftoverRaw).toFixed(2)
+                  );
+
+                  console.log("leftover" + idx + ": ", leftover);
+
+                  return (
+                    <td key={y.year} className="border px-2 py-1 text-right">
+                      <select
+                        className="bg-white border border-gray-300 rounded px-1 py-0.5 text-right"
+                        value={y.adminShare}
+                        onChange={(e) => {
+                          handleYearPlanChange(
+                            idx,
+                            "adminShare",
+                            e.target.value
+                          );
+                          if (idx < yearPlan.length - 1) {
+                            let leftover2 = parseFloat(
+                              leftover - e.target.value
+                            ).toFixed(2);
+                            for (let i = idx + 1; i < yearPlan.length; i++) {
+                              console.log("leftover2" + i + ": ", leftover2);
+                              if (yearPlan[i].adminShare <= leftover2) {
+                                handleYearPlanChange(
+                                  i,
+                                  "adminShare",
+                                  yearPlan[i].adminShare
+                                );
+                                leftover2 = parseFloat(
+                                  leftover2 - yearPlan[i].adminShare
+                                ).toFixed(2);
+                              } else if (leftover2 >= 0.1) {
+                                handleYearPlanChange(
+                                  i,
+                                  "adminShare",
+                                  leftover2
+                                );
+                                leftover2 = 0;
+                              } else {
+                                handleYearPlanChange(i, "adminShare", 0);
+                              }
+                            }
+                          }
+                        }}
+                      >
+                        {/* Generate options from 0 up to leftover in 10% steps */}
+                        {generateOptions(leftover, 0.1).map((val) => (
+                          <option key={val} value={val}>
+                            {(val * 100).toFixed(0)}%
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                  );
+                })}
+              </tr>
+              {/* Row for AVG sales price per sft */}
+              <tr>
+                <td className="border px-2 py-1">AVG Sales Price / m²</td>
+                {calculations.yearlyData.map((row, idx) =>
+                  idx === 0 ? (
+                    <>
+                      <td className="borde px-2">
+                        <div className="flex justify-end">
+                          <Input
+                            type="number"
+                            className="w-20 text-right"
+                            value={currentAdminPrice}
+                            onChange={(e) =>
+                              setCurrentAdminPrice(e.target.value)
+                            }
+                          />
+                        </div>
+                      </td>
+                    </>
+                  ) : (
+                    <td key={row.year} className="border px-2 py-1 text-right">
+                      {formatCurrency(row.vCurrentAdminPrice)}
+                    </td>
+                  )
+                )}
+              </tr>
+              <tr>
+                <td className="border px-2 py-1 font-semibold">
+                  Total Revenue
+                </td>
+                {calculations.yearlyData.map((y) => (
+                  <td key={y.year} className="border px-2 py-1 text-right">
+                    {formatCurrency(y.administrative)}
+                  </td>
+                ))}
+              </tr>
+
+              {/* Blank or separator row */}
+              <tr className="bg-gray-50">
+                <td
+                  className="border px-2 py-1"
+                  colSpan={1 + calculations.yearlyData.length}
+                >
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+
+            {/* ---------- TABLE FOOT ---------- */}
+            <tfoot>
+              <tr className="bg-green-50">
+                <td className="border px-2 py-1 font-bold text-left">
+                  Total Revenues
+                </td>
+                {calculations.yearlyData.map((y) => (
+                  <td
+                    key={y.year}
+                    className="border px-2 py-1 text-right font-semibold"
+                  >
+                    {formatCurrency(y.total)}
+                  </td>
+                ))}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        
       </div>
 
       {/* FINAL SUMMARY */}
